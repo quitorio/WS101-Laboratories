@@ -160,8 +160,6 @@
             color: #ef4444;
         }
 
-        /* Use CSS Grid for the table layout instead of nested divs to simplify */
-        /* This makes the layout more robust and easier to manage */
         tr.todo-item td {
             display: grid;
             grid-template-columns: 40px 1fr 140px 60px 100px;
@@ -225,7 +223,6 @@
                 position: relative;
             }
 
-            /* Use a more mobile-friendly card layout */
             .col-desc {
                 font-size: 1.1rem;
                 padding: 12px 12px 6px;
@@ -297,24 +294,22 @@
     </div>
 
     <script>
-        // --- MOCK DATABASE ---
-        // In a real app, this data would come from a server.
-        // We use a local array to simulate a backend.
+        // --- MOCK DATABASE 
         let todos = [
             //{ id: 1, description: 'Learn JavaScript fundamentals', targetDate: '2025-12-31', done: true },
             //{ id: 2, description: 'Build a portfolio website', targetDate: '2026-01-31', done: false },
             //{ id: 3, description: 'Deploy a full-stack application', targetDate: '2026-02-28', done: false },
         ];
-        let nextId = 4; // To assign unique IDs to new todos
+        let nextId = 4; // assign unique IDs to new todos
 
-        // --- DOM ELEMENT SELECTORS ---
+        // --- DOM ELEMENT SELECTORS 
         const $ = id => document.getElementById(id);
         const tbody = $('todos-body');
         const form = $('todo-form');
         const saveBtn = $('save-btn');
         const cancelBtn = $('cancel-btn');
 
-        // --- CORE FUNCTIONS ---
+        // --- CORE FUNCTIONS 
 
         // Function to render the list of todos in the table
         function renderTodos(todoList) {
@@ -328,8 +323,6 @@
                 const tr = document.createElement('tr');
                 tr.className = 'todo-item';
                 tr.dataset.id = todo.id;
-
-                // Using template literals for clean HTML creation
                 tr.innerHTML = `
               <td>
                 <div class="col-id">${todo.id}</div>
@@ -345,10 +338,9 @@
                 tbody.appendChild(tr);
             });
         }
-
-        // Function to handle form submission (Add or Update)
+        
         async function handleFormSubmit(event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault(); 
 
             const id = $('todo-id').value;
             const description = $('description').value.trim();
@@ -363,13 +355,11 @@
             const payload = { description, targetDate, done };
 
             if (id) {
-                // --- UPDATE existing todo ---
                 const todoToUpdate = todos.find(t => t.id == id);
                 if (todoToUpdate) {
                     Object.assign(todoToUpdate, payload);
                 }
             } else {
-                // --- CREATE new todo ---
                 payload.id = nextId++;
                 todos.push(payload);
             }
@@ -378,7 +368,7 @@
             listTodos();
         }
 
-        // Function to handle actions on the todo list (Edit or Delete)
+        //Edit or Delete
         function handleTableClick(event) {
             const btn = event.target.closest('button.action-btn');
             if (!btn) return;
@@ -397,7 +387,7 @@
                     alert('Task not found!');
                     return;
                 }
-                // Populate the form for editing
+                
                 $('todo-id').value = todo.id;
                 $('description').value = todo.description || '';
                 $('targetDate').value = todo.targetDate || '';
@@ -407,24 +397,19 @@
             }
         }
 
-        // --- HELPER FUNCTIONS ---
-
-        // Resets the form to its initial state
+        //Resets the form
         function clearForm() {
-            form.reset(); // More efficient way to clear form fields
+            form.reset(); 
             $('todo-id').value = '';
             saveBtn.textContent = 'Add';
         }
 
-        // Simulates fetching todos from an API
+        //fetching todos from an API
         function listTodos() {
-            // Here, we just re-render the global 'todos' array.
-            // A timeout can simulate network delay.
             tbody.innerHTML = '<tr><td colspan="5" class="loading-cell">Loading...</td></tr>';
             setTimeout(() => renderTodos(todos), 200);
         }
 
-        // Sanitizes HTML to prevent XSS attacks
         function escapeHtml(str) {
             if (!str) return '';
             const div = document.createElement('div');
@@ -432,25 +417,18 @@
             return div.innerHTML;
         }
 
-        // --- EVENT LISTENERS ---
-
-        // Listen for form submissions
         form.addEventListener('submit', handleFormSubmit);
-
-        // Listen for clicks on the table body (for Edit/Delete buttons)
+        
         tbody.addEventListener('click', handleTableClick);
-
-        // Button event listeners
+        
         $('refresh').addEventListener('click', listTodos);
         $('clear-local').addEventListener('click', clearForm);
         cancelBtn.addEventListener('click', clearForm);
 
-        // --- INITIAL LOAD ---
-
-        // Load the initial list of todos when the page loads
         document.addEventListener('DOMContentLoaded', listTodos);
 
     </script>
 </body>
+
 
 </html>
