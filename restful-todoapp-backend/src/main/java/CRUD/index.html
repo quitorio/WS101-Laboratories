@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Todo List</title>
+    <meta name="description" content="Simple Google-style todo demo" />
+    <style>
+        :root {
+            --bg: #000000;
+            --card: #0b0b0b;
+            --accent: #2563eb;
+            --muted: #9ca3af;
+            --border: rgba(255, 255, 255, 0.06);
+            --divider: rgba(255, 255, 255, 0.06);
+            --text: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            padding: 24px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            background: var(--card);
+            padding: 28px 32px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-top: 6px;
+            margin-bottom: 18px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .row,
+        .toolbar {
+            justify-content: center;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        #description {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            border-radius: 4px;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        #description {
+            font-size: 0.95rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        #targetDate {
+            padding: 8px 10px;
+            border-radius: 6px;
+        }
+
+        button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 120ms ease, transform 80ms ease;
+        }
+
+        button:hover {
+            filter: brightness(0.95);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button.secondary {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            border-radius: 8px;
+        }
+
+        button:focus {
+            outline: 3px solid rgba(37, 99, 235, 0.18);
+            outline-offset: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        tbody tr {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent);
+            margin-bottom: 10px;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--divider);
+            text-align: left;
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+        thead th {
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            padding: 6px 8px;
+        }
+
+        .action-btn.delete {
+            color: #ef4444;
+        }
+
+        tr.todo-item td {
+            display: grid;
+            grid-template-columns: 40px 1fr 140px 60px 100px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toolbar {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--divider);
+            display: flex;
+            gap: 8px;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text);
+        }
+
+        td.loading-cell,
+        td.empty-cell {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr.todo-item {
+                border: 1px solid var(--divider);
+                border-radius: 8px;
+                margin-bottom: 12px;
+            }
+
+            tr.todo-item td {
+                display: block;
+                border: none;
+                padding: 0;
+                position: relative;
+            }
+
+            .col-desc {
+                font-size: 1.1rem;
+                padding: 12px 12px 6px;
+            }
+
+            .col-target {
+                padding: 0 12px;
+                color: var(--muted);
+                font-size: 0.9rem;
+            }
+
+            .col-done {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                font-size: 1.2rem;
+            }
+
+            .col-id {
+                display: none;
+            }
+
+            .col-actions {
+                padding: 6px 12px 12px;
+                text-align: right;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Todo List</h1>
+        <p class="subtitle"></p>
+
+        <form id="todo-form">
+            <input type="hidden" id="todo-id" />
+            <div class="row">
+                <input id="description" placeholder="Add a new task..." required />
+                <input id="targetDate" type="date" />
+                <label class="checkbox"><input id="done" type="checkbox" /> Done</label>
+                <button id="save-btn" type="submit">Add</button>
+                <button id="cancel-btn" type="button" class="secondary">Cancel</button>
+            </div>
+        </form>
+
+        <div class="toolbar">
+            <button id="refresh">Refresh</button>
+            <button id="clear-local">Clear Form</button>
+        </div>
+
+        <table id="todos-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Target</th>
+                    <th>Done</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="todos-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let todos = [
+            //{ id: 1, description: 'Learn JavaScript fundamentals', targetDate: '2025-12-31', done: true },
+            //{ id: 2, description: 'Build a portfolio website', targetDate: '2026-01-31', done: false },
+            //{ id: 3, description: 'Deploy a full-stack application', targetDate: '2026-02-28', done: false },
+        ];
+        let nextId = 4; 
+
+        const $ = id => document.getElementById(id);
+        const tbody = $('todos-body');
+        const form = $('todo-form');
+        const saveBtn = $('save-btn');
+        const cancelBtn = $('cancel-btn');
+
+        function renderTodos(todoList) {
+            if (!todoList.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">No tasks yet. Add one above!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = ''; 
+            todoList.forEach(todo => {
+                const tr = document.createElement('tr');
+                tr.className = 'todo-item';
+                tr.dataset.id = todo.id;
+                tr.innerHTML = `
+              <td>
+                <div class="col-id">${todo.id}</div>
+                <div class="col-desc">${escapeHtml(todo.description)}</div>
+                <div class="col-target">${todo.targetDate || 'No date'}</div>
+                <div class="col-done">${todo.done ? '✔️' : '⚪'}</div>
+                <div class="col-actions">
+                  <button class="action-btn" data-action="edit" data-id="${todo.id}">Edit</button>
+                  <button class="action-btn delete" data-action="delete" data-id="${todo.id}">Delete</button>
+                </div>
+              </td>
+            `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault(); 
+
+            const id = $('todo-id').value;
+            const description = $('description').value.trim();
+            const targetDate = $('targetDate').value || null;
+            const done = $('done').checked;
+
+            if (!description) {
+                alert('Description cannot be empty.');
+                return;
+            }
+
+            const payload = { description, targetDate, done };
+
+            if (id) {
+                const todoToUpdate = todos.find(t => t.id == id);
+                if (todoToUpdate) {
+                    Object.assign(todoToUpdate, payload);
+                }
+            } else {
+                payload.id = nextId++;
+                todos.push(payload);
+            }
+
+            clearForm();
+            listTodos();
+        }
+
+        function handleTableClick(event) {
+            const btn = event.target.closest('button.action-btn');
+            if (!btn) return;
+
+            const id = btn.dataset.id;
+            const action = btn.dataset.action;
+
+            if (action === 'delete') {
+                if (!confirm('Are you sure you want to delete this task?')) return;
+                todos = todos.filter(t => t.id != id);
+                listTodos();
+            } else if (action === 'edit') {
+                const todo = todos.find(t => t.id == id);
+                if (!todo) {
+                    alert('Task not found!');
+                    return;
+                }
+                $('todo-id').value = todo.id;
+                $('description').value = todo.description || '';
+                $('targetDate').value = todo.targetDate || '';
+                $('done').checked = !!todo.done;
+                saveBtn.textContent = 'Update';
+                $('description').focus();
+            }
+        }
+
+        function clearForm() {
+            form.reset(); 
+            $('todo-id').value = '';
+            saveBtn.textContent = 'Add';
+        }
+
+        function listTodos() {
+            tbody.innerHTML = '<tr><td colspan="5" class="loading-cell">Loading...</td></tr>';
+            setTimeout(() => renderTodos(todos), 200);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
+        form.addEventListener('submit', handleFormSubmit);
+
+        tbody.addEventListener('click', handleTableClick);
+
+        $('refresh').addEventListener('click', listTodos);
+        $('clear-local').addEventListener('click', clearForm);
+        cancelBtn.addEventListener('click', clearForm);
+        
+        document.addEventListener('DOMContentLoaded', listTodos);
+
+    </script>
+</body>
+
+</html>
